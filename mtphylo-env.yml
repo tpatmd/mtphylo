@@ -1,0 +1,9 @@
+name: mtphylo-env
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - gblocks
+  - iqtree
+  - translatorx
+  - mafft
