@@ -45,3 +45,5 @@ with open("split-report.tsv", "w") as file:
             else:
                 file.write(f"\t0")
         file.write("\n")
+
+print(len(cds.items()))
