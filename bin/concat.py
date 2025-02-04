@@ -44,11 +44,29 @@ with open(f"concatenated_dataset.fasta", "w") as file:
                 length[gene] = len(sequences[species][gene])
         file.write(f"\n")
 
-with open(f"concatenated_dataset.partition", "w") as file:
-    start = 1
-    file.write(f"#nexus\n")
-    file.write(f"begin sets;\n")
-    for gene in genes:
-        file.write(f"    charset {gene} = {start}-{start+length[gene]-1};\n")
-        start += length[gene]
-    file.write(f"end;")
+if sys.argv[2] == "cds":
+    with open(f"concatenated_dataset.partition", "w") as file:
+        start = 1
+        file.write(f"#nexus\n")
+        file.write(f"begin sets;\n")
+        for gene in genes:
+            file.write(f"    charset {gene} = {start}-{start + length[gene] - 1};\n")
+            start += length[gene]
+        file.write(f"end;")
+elif sys.argv[2] == "codon":
+    with open(f"concatenated_dataset.partition", "w") as file:
+        start = 1
+        file.write(f"#nexus\n")
+        file.write(f"begin sets;\n")
+        for gene in genes:
+            file.write(
+                f"    charset {gene}-pt1 = {start}-{start + length[gene] - 1}\\3;\n"
+            )
+            file.write(
+                f"    charset {gene}-pt2 = {start + 1}-{start + length[gene] - 1}\\3;\n"
+            )
+            file.write(
+                f"    charset {gene}-pt3 = {start + 2}-{start + length[gene] - 1}\\3;\n"
+            )
+            start += length[gene]
+        file.write(f"end;")

@@ -1,7 +1,10 @@
 params.input_file = "input.fasta"
 params.pcg = 13
 // GBlocks parameter
-params.gf = 21
+params.gf = 20
+params.trimmer = "bmge"
+params.partition = "codon"
+params.merge = true
 
 workflow {
     Channel
@@ -42,9 +45,17 @@ process multipleAlignment {
     path "*"
 
     script:
-    """
-    translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p F -c 5 -t F -g "-b2=${params.gf} -b4=5 -b5=h" 
-    """
+    if (params.trimmer == "gblocks") {
+        """
+        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p F -c 5 -t F -g "-b2=${params.gf} -b4=5 -b5=h"
+        """
+    }
+    else if (params.trimmer == "bmge") {
+        """
+        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p F -c 5 -t F
+        bmge -i ${input_cds.baseName}.nt_ali.fasta -of ${input_cds.baseName}.nt_cleanali.fasta -t CODON
+        """
+    }
 }
 
 process concatenateAlignments {
@@ -60,7 +71,7 @@ process concatenateAlignments {
     script:
     """
     cat ${alignment_files} > tmp.fasta
-    concat.py tmp.fasta ${params.pcg}
+    concat.py tmp.fasta ${params.pcg} ${params.partition}
     """
 }
 
@@ -75,7 +86,14 @@ process phylogeneticAnalysis {
     path "*"
 
     script:
-    """
-    iqtree2 -s ${alignment_file} -p ${partition_file} -m MFP -B 1000 -T AUTO
-    """
+    if (params.merge) {
+        """
+        iqtree2 -s ${alignment_file} -p ${partition_file} -m MFP+MERGE -B 1000 -T AUTO --merge greedy
+        """
+    }
+    else {
+        """
+        iqtree2 -s ${alignment_file} -p ${partition_file} -m MFP -B 1000 -T AUTO
+        """
+    }
 }

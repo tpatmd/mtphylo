@@ -4,6 +4,9 @@ channels:
   - bioconda
 dependencies:
   - gblocks
+  - bmge
   - iqtree
-  - translatorx
+  - muscle
+  - clustalw
   - mafft
+  - prank
