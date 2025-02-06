@@ -5,6 +5,7 @@ params.trimmer = "gblocks"
 params.partition = "cds"
 params.merge = false
 params.aln = "F"
+params.gb = 13
 
 workflow {
     Channel
