@@ -2,21 +2,37 @@
 
 import sys
 
-genes = [
-    "nad2",
-    "cox1",
-    "cox2",
-    "atp8",
-    "atp6",
-    "cox3",
-    "nad3",
-    "nad5",
-    "nad4",
-    "nad4l",
-    "nad6",
-    "cytb",
-    "nad1",
-]
+if sys.argv[2] == "13":
+    genes = [
+        "nad2",
+        "cox1",
+        "cox2",
+        "atp8",
+        "atp6",
+        "cox3",
+        "nad3",
+        "nad5",
+        "nad4",
+        "nad4l",
+        "nad6",
+        "cytb",
+        "nad1",
+    ]
+elif sys.argv[2] == "12":
+    genes = [
+        "nad2",
+        "cox1",
+        "cox2",
+        "atp6",
+        "cox3",
+        "nad3",
+        "nad5",
+        "nad4",
+        "nad4l",
+        "nad6",
+        "cytb",
+        "nad1",
+    ]
 
 sequences = {}
 length = {}
@@ -44,7 +60,7 @@ with open(f"concatenated_dataset.fasta", "w") as file:
                 length[gene] = len(sequences[species][gene])
         file.write(f"\n")
 
-if sys.argv[2] == "cds":
+if sys.argv[3] == "cds":
     with open(f"concatenated_dataset.partition", "w") as file:
         start = 1
         file.write(f"#nexus\n")
@@ -53,7 +69,7 @@ if sys.argv[2] == "cds":
             file.write(f"    charset {gene} = {start}-{start + length[gene] - 1};\n")
             start += length[gene]
         file.write(f"end;")
-elif sys.argv[2] == "codon":
+elif sys.argv[3] == "codon":
     with open(f"concatenated_dataset.partition", "w") as file:
         start = 1
         file.write(f"#nexus\n")

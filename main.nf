@@ -1,10 +1,10 @@
 params.input_file = "input.fasta"
 params.pcg = 13
-// GBlocks parameter
-params.gf = 20
-params.trimmer = "bmge"
-params.partition = "codon"
-params.merge = true
+params.aligner = "translatorx"
+params.trimmer = "gblocks"
+params.partition = "cds"
+params.merge = false
+params.aln = "F"
 
 workflow {
     Channel
@@ -47,13 +47,21 @@ process multipleAlignment {
     script:
     if (params.trimmer == "gblocks") {
         """
-        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p F -c 5 -t F -g "-b2=${params.gf} -b4=5 -b5=h"
+        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p ${params.aln} -g "-b2=10 -b4=5 -b5=h" -c 5
+        # gblocks ${input_cds.baseName}.nt_ali.fasta -t=c -b2=20 -b3=10 -b4=5 -b5=h || true
+        # mv ${input_cds.baseName}.nt_ali.fasta-gb ${input_cds.baseName}.nt_cleanali.fasta
         """
     }
     else if (params.trimmer == "bmge") {
         """
-        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p F -c 5 -t F
+        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p ${params.aln} -c 5
         bmge -i ${input_cds.baseName}.nt_ali.fasta -of ${input_cds.baseName}.nt_cleanali.fasta -t CODON
+        """
+    }
+    else if (params.trimmer == "none") {
+        """
+        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p ${params.aln} -c 5
+        mv ${input_cds.baseName}.nt_ali.fasta ${input_cds.baseName}.nt_cleanali.fasta
         """
     }
 }
