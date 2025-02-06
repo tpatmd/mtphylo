@@ -47,7 +47,7 @@ process multipleAlignment {
     script:
     if (params.trimmer == "gblocks") {
         """
-        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p ${params.aln} -g "-b2=10 -b4=5 -b5=h" -c 5
+        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p ${params.aln} -g "-b2=${params.gb} -b4=5 -b5=h" -c 5
         # gblocks ${input_cds.baseName}.nt_ali.fasta -t=c -b2=20 -b3=10 -b4=5 -b5=h || true
         # mv ${input_cds.baseName}.nt_ali.fasta-gb ${input_cds.baseName}.nt_cleanali.fasta
         """
