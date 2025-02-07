@@ -38,7 +38,7 @@ sequences = {}
 length = {}
 tmp = 0
 
-if sys.argev[4] == "nuc":
+if sys.argv[4] == "nuc":
     with open(sys.argv[1], "r") as file:
         for line in file:
             if line.strip():
