@@ -6,6 +6,7 @@ params.partition = "cds"
 params.merge = false
 params.aln = "F"
 params.gb = 13
+params.type = "nuc"
 
 workflow {
     Channel
@@ -42,28 +43,50 @@ process multipleAlignment {
     val num_species
 
     output:
-    path "*.nt_cleanali.fasta", emit: alignment_fasta
+    path "*_cleanali.fasta", emit: alignment_fasta
     path "*"
 
     script:
-    if (params.trimmer == "gblocks") {
-        """
-        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p ${params.aln} -g "-b2=${params.gb} -b4=5 -b5=h" -c 5
-        # gblocks ${input_cds.baseName}.nt_ali.fasta -t=c -b2=20 -b3=10 -b4=5 -b5=h || true
-        # mv ${input_cds.baseName}.nt_ali.fasta-gb ${input_cds.baseName}.nt_cleanali.fasta
-        """
+    if (params.type == "nuc") {
+        if (params.trimmer == "gblocks") {
+            """
+            translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p ${params.aln} -g "-b2=${params.gb} -b4=5 -b5=h" -c 5
+            # gblocks ${input_cds.baseName}.nt_ali.fasta -t=c -b2=20 -b3=10 -b4=5 -b5=h || true
+            # mv ${input_cds.baseName}.nt_ali.fasta-gb ${input_cds.baseName}.nt_cleanali.fasta
+            """
+        }
+        else if (params.trimmer == "bmge") {
+            """
+            translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p ${params.aln} -c 5
+            bmge -i ${input_cds.baseName}.nt_ali.fasta -of ${input_cds.baseName}.nt_cleanali.fasta -t CODON
+            """
+        }
+        else if (params.trimmer == "none") {
+            """
+            translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p ${params.aln} -c 5
+            mv ${input_cds.baseName}.nt_ali.fasta ${input_cds.baseName}.nt_cleanali.fasta
+            """
+        }
     }
-    else if (params.trimmer == "bmge") {
-        """
-        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p ${params.aln} -c 5
-        bmge -i ${input_cds.baseName}.nt_ali.fasta -of ${input_cds.baseName}.nt_cleanali.fasta -t CODON
-        """
-    }
-    else if (params.trimmer == "none") {
-        """
-        translatorx.pl -i ${input_cds} -o ${input_cds.baseName} -p ${params.aln} -c 5
-        mv ${input_cds.baseName}.nt_ali.fasta ${input_cds.baseName}.nt_cleanali.fasta
-        """
+    else if (params.type == "aa") {
+        if (params.trimmer == "gblocks") {
+            """
+            mafft --auto ${input_cds} > ${input_cds.baseName}.aa_ali.fasta
+            gblocks ${input_cds.baseName}.aa_ali.fasta -b2=${params.gb} -b4=5 -b5=h || true
+            mv ${input_cds.baseName}.aa_ali.fasta-gb ${input_cds.baseName}.aa_cleanali.fasta
+            """
+        }
+        else if (params.trimmer == "bmge") {
+            """
+            mafft --auto ${input_cds} > ${input_cds.baseName}.aa_ali.fasta
+            bmge -i ${input_cds.baseName}.aa_ali.fasta -of ${input_cds.baseName}.aa_cleanali.fasta -t AA
+            """
+        }
+        else if (params.trimmer == "none") {
+            """
+            mafft --auto ${input_cds} > ${input_cds.baseName}.aa_cleanali.fasta
+            """
+        }
     }
 }
 
