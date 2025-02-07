@@ -38,18 +38,32 @@ sequences = {}
 length = {}
 tmp = 0
 
-with open(sys.argv[1], "r") as file:
-    for line in file:
-        if line.strip():
-            if line.startswith(">"):
-                species = "_".join(line.strip().split("_")[:3])[1:]
-                gene = line.strip().split("_")[3]
-                sequences[species] = sequences.get(species, {})
-            else:
-                sequences[species][gene] = (
-                    sequences[species].get(gene, "")
-                    + "".join(line.strip().split(" ")).upper()
-                )
+if sys.argev[4] == "nuc":
+    with open(sys.argv[1], "r") as file:
+        for line in file:
+            if line.strip():
+                if line.startswith(">"):
+                    species = "_".join(line.strip().split("_")[:3])[1:]
+                    gene = line.strip().split("_")[3]
+                    sequences[species] = sequences.get(species, {})
+                else:
+                    sequences[species][gene] = (
+                        sequences[species].get(gene, "")
+                        + "".join(line.strip().split(" ")).upper()
+                    )
+elif sys.argv[4] == "aa":
+    with open(sys.argv[1], "r") as file:
+        for line in file:
+            if line.strip():
+                if line.startswith(">"):
+                    species = line.strip().split(" ")[0][1:]
+                    gene = line.strip().split(" ")[1]
+                    sequences[species] = sequences.get(species, {})
+                else:
+                    sequences[species][gene] = (
+                        sequences[species].get(gene, "")
+                        + "".join(line.strip().split(" ")).upper()
+                    )
 
 with open(f"concatenated_dataset.fasta", "w") as file:
     for species, sequence in sequences.items():

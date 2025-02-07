@@ -103,7 +103,7 @@ process concatenateAlignments {
     script:
     """
     cat ${alignment_files} > tmp.fasta
-    concat.py tmp.fasta ${params.pcg} ${params.partition}
+    concat.py tmp.fasta ${params.pcg} ${params.partition} ${params.type}
     """
 }
 
