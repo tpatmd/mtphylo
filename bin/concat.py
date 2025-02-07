@@ -34,7 +34,9 @@ elif sys.argv[2] == "12":
         "nad1",
     ]
 elif sys.argv[2] == "6":
-    genes = ["cox1", "cox2", "cox3", "cytb", "atp6", "nad1"]
+    genes = ["atp6", "cox1", "cox2", "cox3", "cytb", "nad1"]
+elif sys.argv[2] == "5":
+    genes = ["atp6", "cox1", "cox2", "cox3", "nad1"]
 
 sequences = {}
 length = {}
