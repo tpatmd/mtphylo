@@ -7,6 +7,7 @@ params.merge = false
 params.aln = "F"
 params.gb = 13
 params.type = "nuc"
+params.thread = "AUTO"
 
 workflow {
     Channel
@@ -120,12 +121,12 @@ process phylogeneticAnalysis {
     script:
     if (params.merge) {
         """
-        iqtree2 -s ${alignment_file} -p ${partition_file} -m MFP+MERGE -B 1000 -T AUTO --merge greedy
+        iqtree2 -s ${alignment_file} -p ${partition_file} -m MFP+MERGE -B 1000 -T ${params.thread} --merge greedy
         """
     }
     else {
         """
-        iqtree2 -s ${alignment_file} -p ${partition_file} -m MFP -B 1000 -T AUTO
+        iqtree2 -s ${alignment_file} -p ${partition_file} -m MFP -B 1000 -T ${params.thread}
         """
     }
 }
